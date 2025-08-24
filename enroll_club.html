@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enroll in Club</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>🎯 Enroll in Clubs</h2>
+    
+    <!-- Error/Success Messages -->
+    <div id="messageContainer"></div>
+    
+    <div class="form-container">
+      <form action="php/enroll_club.php" method="POST" id="enrollmentForm">
+        <label for="student_id">🆔 Student ID:</label>
+        <input type="text" id="student_id" name="student_id" placeholder="Enter your Student ID" required maxlength="50">
+
+        <label>🎭 Select Your Clubs (You can select multiple):</label>
+        <div class="club-grid">
+          <div class="club-item">
+            <label class="checkbox-label">
+              <input type="checkbox" name="clubs[]" value="Dance"> 💃 Dance Club
+            </label>
+          </div>
+          <div class="club-item">
+            <label class="checkbox-label">
+              <input type="checkbox" name="clubs[]" value="Music"> 🎵 Music Club
+            </label>
+          </div>
+          <div class="club-item">
+            <label class="checkbox-label">
+              <input type="checkbox" name="clubs[]" value="Drama"> 🎭 Drama Club
+            </label>
+          </div>
+          <div class="club-item">
+            <label class="checkbox-label">
+              <input type="checkbox" name="clubs[]" value="Sports"> ⚽ Sports Club
+            </label>
+          </div>
+          <div class="club-item">
+            <label class="checkbox-label">
+              <input type="checkbox" name="clubs[]" value="Photography"> 📸 Photography Club
+            </label>
+          </div>
+          <div class="club-item">
+            <label class="checkbox-label">
+              <input type="checkbox" name="clubs[]" value="Art"> 🎨 Art Club
+            </label>
+          </div>
+        </div>
+
+        <div style="margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+          <p style="color: white; margin: 0; font-size: 14px;">
+            ℹ️ <strong>Note:</strong> You can select multiple clubs. If you're already enrolled, your previous selections will be updated.
+          </p>
+        </div>
+
+        <button type="submit" id="enrollBtn">🎉 Enroll Now</button>
+      </form>
+    </div>
+    <a href="index.html" class="back-btn">← Back to Home</a>
+  </div>
+
+  <script>
+    // Pre-fill Student ID from URL parameter
+    window.onload = function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const studentId = urlParams.get('student_id');
+      const error = urlParams.get('error');
+      const success = urlParams.get('success');
+      
+      if (studentId) {
+        document.getElementById('student_id').value = decodeURIComponent(studentId);
+      }
+      
+      const messageContainer = document.getElementById('messageContainer');
+      
+      if (error) {
+        messageContainer.innerHTML = `<div class="error">❌ Error: ${decodeURIComponent(error)}</div>`;
+      } else if (success === 'enrolled') {
+        const count = urlParams.get('count') || '0';
+        messageContainer.innerHTML = `<div class="success">✅ Successfully enrolled in ${count} club(s)!</div>`;
+      }
+    };
+
+    // Form validation and submission
+    document.getElementById('enrollmentForm').addEventListener('submit', function(e) {
+      const checkboxes = document.querySelectorAll('input[name="clubs[]"]:checked');
+      const enrollBtn = document.getElementById('enrollBtn');
+      
+      if (checkboxes.length === 0) {
+        e.preventDefault();
+        alert('⚠️ Please select at least one club to enroll in!');
+        return;
+      }
+      
+      enrollBtn.innerHTML = '<span class="loading"></span> Enrolling...';
+      enrollBtn.disabled = true;
+      
+      // Show selected clubs
+      const selectedClubs = Array.from(checkboxes).map(cb => cb.value).join(', ');
+      console.log('Enrolling in clubs:', selectedClubs);
+    });
+
+    // Add visual feedback when clubs are selected
+    document.querySelectorAll('input[name="clubs[]"]').forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        const clubItem = this.closest('.club-item');
+        if (this.checked) {
+          clubItem.style.background = 'rgba(255, 255, 255, 0.3)';
+          clubItem.style.transform = 'scale(1.05)';
+        } else {
+          clubItem.style.background = 'rgba(255, 255, 255, 0.1)';
+          clubItem.style.transform = 'scale(1)';
+        }
+      });
+    });
+
+    // Select all / Deselect all functionality
+    let selectAllToggle = false;
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && e.key === 'a') {
+        e.preventDefault();
+        selectAllToggle = !selectAllToggle;
+        document.querySelectorAll('input[name="clubs[]"]').forEach(cb => {
+          cb.checked = selectAllToggle;
+          cb.dispatchEvent(new Event('change'));
+        });
+      }
+    });
+  </script>
+</body>
+</html>

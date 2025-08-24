@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register Student</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>✨ Student Registration</h2>
+    
+    <!-- Error/Success Messages -->
+    <div id="messageContainer"></div>
+    
+    <form action="php/register_student.php" method="POST" id="registrationForm">
+      <input type="text" name="firstname" placeholder="✍️ First Name" required maxlength="100">
+      <input type="text" name="lastname" placeholder="✍️ Last Name" required maxlength="100">
+      <input type="text" id="student_id" name="student_id" placeholder="🆔 Student ID" required maxlength="50">
+      <input type="email" name="email" placeholder="📧 Email Address" required maxlength="150">
+      <select name="gender" required>
+        <option value="">👥 Select Gender</option>
+        <option value="M">👨 Male</option>
+        <option value="F">👩 Female</option>
+        <option value="O">🌈 Other</option>
+      </select>
+      <input type="text" name="department" placeholder="🏛️ Department" required maxlength="100">
+      <button type="submit" id="submitBtn">🚀 Register Now</button>
+    </form>
+    <a href="index.html" class="back-btn">← Back to Home</a>
+  </div>
+
+  <script>
+    // Display URL parameters as messages
+    window.onload = function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const error = urlParams.get('error');
+      const success = urlParams.get('success');
+      
+      const messageContainer = document.getElementById('messageContainer');
+      
+      if (error) {
+        messageContainer.innerHTML = `<div class="error">❌ Error: ${decodeURIComponent(error)}</div>`;
+      } else if (success) {
+        messageContainer.innerHTML = `<div class="success">✅ Registration successful! Redirecting to club enrollment...</div>`;
+        setTimeout(() => {
+          window.location.href = 'enroll_club.html';
+        }, 2000);
+      }
+    };
+
+    // Form validation and submission
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.innerHTML = '<span class="loading"></span> Registering...';
+      submitBtn.disabled = true;
+      
+      // Basic client-side validation
+      const studentId = document.getElementById('student_id').value.trim();
+      if (studentId.length < 3) {
+        e.preventDefault();
+        alert('Student ID must be at least 3 characters long');
+        submitBtn.innerHTML = '🚀 Register Now';
+        submitBtn.disabled = false;
+        return;
+      }
+    });
+
+    // Auto-generate Student ID suggestion
+    document.querySelector('input[name="firstname"]').addEventListener('blur', generateStudentId);
+    document.querySelector('input[name="lastname"]').addEventListener('blur', generateStudentId);
+
+    function generateStudentId() {
+      const firstname = document.querySelector('input[name="firstname"]').value.trim();
+      const lastname = document.querySelector('input[name="lastname"]').value.trim();
+      const studentIdField = document.getElementById('student_id');
+      
+      if (firstname && lastname && !studentIdField.value) {
+        const suggestion = (firstname.substring(0, 3) + lastname.substring(0, 3) + Math.floor(Math.random() * 1000)).toUpperCase();
+        studentIdField.placeholder = `💡 Suggested: ${suggestion}`;
+      }
+    }
+  </script>
+</body>
+</html>
