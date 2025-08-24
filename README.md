@@ -1,5 +1,7 @@
 # CLUB_ENROLLMENT
 
+Problem Statement
+The management of student registrations and club enrollments in colleges is often done manually, leading to errors and difficulty in tracking records. To address this, a College Club Enrollment System is required where students can register, enroll in multiple clubs, and administrators can view all enrollments in a single dashboard. This system will simplify record keeping and provide an easy-to-use web interface.
 
 
 
